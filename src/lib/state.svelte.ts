@@ -1,0 +1,1 @@
+export let cursor = $state({ size: 8, color: 'rgba(255, 255, 255, 0.7)'});

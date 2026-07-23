@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="text-scale" content="scale" />
+		<meta name="description" content="Alvise's personal website" />
+		<link rel="icon" href="/favicon.png" />
+		%sveltekit.head%
+	</head>
+	
+	<body>%sveltekit.body%
+	</body>
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			scroll-behavior: smooth;
+		}
+
+		html {
+			cursor: none;
+			overflow-x: hidden;
+		}
+	</style>
+
+	<script>
+		if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+	
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+	
+    if (window.location.hash && document.getElementById(window.location.hash.substring(1))) {
+    history.replaceState('', document.title, window.location.pathname);
+  }
+	</script>
+
+</html>

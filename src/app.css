@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+:root {
+    --purple: rgb(115, 88, 252);
+}
+
+
+@keyframes rotate {
+    0% { transform: rotateZ(0deg);}
+    100% { transform: rotateZ(360deg); }
+}
+
+img {
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+
+::selection {
+    background-color: var(--purple);
+}
+
+html {
+    cursor: none !important;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
