@@ -32,7 +32,6 @@
             });
         }, { 
             threshold: 1,
-            rootMargin: '-5% 0px -5% 0px' 
         });
         
 
@@ -129,6 +128,10 @@
         font-size: 120%;
         font-weight: 600;
         letter-spacing: 2px;
+    }
+
+    .job-active p:first-child, .job-active p:last-child {
+        font-weight: 800 !important;
     }
 
     .job a, .job-active a {

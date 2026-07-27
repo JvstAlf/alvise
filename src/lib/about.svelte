@@ -16,21 +16,6 @@
 
     onMount(() => {
         VanillaTilt.init(card);
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    visible = true;
-                } else {
-                    visible = false
-                }
-            });
-        }, { 
-            threshold: 0.5,
-        });
-        
-
-        observer.observe(card);
     })
 
 </script>
@@ -68,19 +53,23 @@
         </div>
         <div>
             <h1>ME & MYSELF</h1>
-            <div class:visible bind:this={card} class="user-card"
-            data-tilt data-tilt-max="8" data-tilt-speed="5000" data-tilt-perspective="1000" data-tilt-glare="true" data-tilt-transition="true" data-tilt-scale="1.03" data-tilt-reverse="false" data-tilt-max-glare="0.2"  data-tilt-reset="false" data-tilt-startX="12" data-tilt-startY="5"
+
+            <div class="user-card" bind:this={card} role="presentation"
+            data-tilt data-tilt-max="8" data-tilt-speed="3000" data-tilt-perspective="1000" data-tilt-transition="true" data-tilt-scale="1.03" data-tilt-glare="true" data-tilt-reverse="false" data-tilt-max-glare="0.2"  data-tilt-reset="false" data-tilt-startX="12" data-tilt-startY="5"
             style="--opacity: {opacity}"
             onmouseover={() => shinebrightlikeadiamond(100)}
-            onmouseleave={() => shinebrightlikeadiamond(0)}>
+            onmouseleave={() => shinebrightlikeadiamond(0)}
+            onfocus={() => shinebrightlikeadiamond(100)}
+            onblur={() => shinebrightlikeadiamond(0)}>
                 <img src={Io} alt="io">
                 <p>Graduated from Michelangelo Guggenheim's Art School (2018 - 2023)</p>
                 <p>Love coding, graphic design, music.<br> I play in a <a href="https://nomorecho.com" target="_blank" onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>band!</a></p>
                 <div>
-                    <button onclick={window.open('https://www.alvise.me/assets/Curriculum.pdf')}  onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>CURRICULUM</button>
-                    <button onclick={window.open('https://drive.google.com/file/d/1nrTgpdwTIjI2ywoTlYrzBeXJNUphGwae/view?usp=sharing')} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>PORTFOLIO</button>
+                    <button onclick={() => window.open('https://www.alvise.me/assets/Curriculum.pdf')}  onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>CURRICULUM</button>
+                    <button onclick={() => window.open('https://drive.google.com/file/d/1nrTgpdwTIjI2ywoTlYrzBeXJNUphGwae/view?usp=sharing')} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>PORTFOLIO</button>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -95,6 +84,7 @@
         padding: 2rem;
         display: flex;
         align-items: center;
+        z-index: 1;
     }
 
     .about {
@@ -144,11 +134,12 @@
         box-shadow: 10px 10px 10px 5px rgba(0, 0, 0, 0.6);
         transform-style: preserve-3d;
         transform: perspective(1000px);
-        scale: 0;
-        opacity: 0;
         transition: 0.6s ease;
         position: relative;
         overflow: hidden;
+        will-change: transform;
+        backface-visibility: hidden;
+        z-index: 2;
     }
 
     .user-card::before {
@@ -164,11 +155,6 @@
     z-index: 999;
     opacity: var(--opacity);
     transition: opacity 0.3s ease;
-    }
-
-    .user-card.visible {
-        opacity: 1;
-        scale: 1;
     }
 
     .user-card img {

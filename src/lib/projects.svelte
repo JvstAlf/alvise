@@ -4,6 +4,8 @@
 
 <section id="projects">
 
+  <div class="bg1"></div>
+
     <div class="websites">
     <button onclick={() => iframe = 'https://alvise.me'}>Old Portfolio</button>
     <button onclick={() => iframe = 'https://old.alvise.me'}>Really old Portfolio</button>
@@ -38,6 +40,29 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        position: relative;
+    }
+
+    .bg1 {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background-image: url('$lib/assets/bg2.svg');
+        background-repeat: no-repeat;
+        background-size: contain;
+        top: -50%;
+        right: -60%;
+        animation: bg2 8s ease-out infinite;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    @keyframes bg2 {
+        0% { opacity: 0.1; transform: scale(1); }
+        25% { opacity: 0.3; }
+        50% { opacity: 0.2; transform: scale(1.03); }
+        75% { opacity: 0.3; }
+        100% { opacity: 0.1; transform: scale(1); }
     }
 
     .websites {

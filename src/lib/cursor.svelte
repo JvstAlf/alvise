@@ -13,8 +13,8 @@
 <svelte:window on:mousemove={handleMouseMove} />
 
 
-<div class="cursor" style="left: {x}px; top: {y}px; transition: 0.2s ease-out; width: {cursor.size}px; height: {cursor.size}px; background-color: {cursor.color}"></div>
-<div class="gradient" style="left: {x}px; top: {y}px; transition: 0.25s ease-out;"></div>
+<div class="cursor" style="left: {x}px; top: {y}px; transition: 0.15s ease-out; width: {cursor.size}px; height: {cursor.size}px; background-color: {cursor.color}"></div>
+<div class="gradient" style="left: {x}px; top: {y}px; transition: 0.2s ease-out;"></div>
 <div class="gradient2" style="left: {x}px; top: {y}px; transition: 0.3s ease-out;"></div>
 
 
