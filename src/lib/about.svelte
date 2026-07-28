@@ -192,7 +192,7 @@
         padding: 2rem;
         display: flex;
         gap: 2rem;
-        transform: perspective(1000px);
+        transform: perspective(500px);
         transform-style: preserve-3d;
     }
 
@@ -206,15 +206,12 @@
         cursor: none;
         transition: 0.3s ease;
         font-weight: 200;
-        font-size: 110%;
         font-variation-settings: "YEAR" 1990;
         box-shadow: 5px 5px 10px 5px rgba(0, 0, 0, 0.75);
-        transform-style: preserve-3d;
     }
 
     .user-card button:hover {
-        scale: 1.03;
-        transform: translateZ(25px);
+        transform: translateZ(30px);
         box-shadow: 5px 5px 10px 5px rgba(0, 0, 0, 0.75);
         color: var(--purple);
     }
