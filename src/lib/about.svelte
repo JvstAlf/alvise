@@ -6,8 +6,6 @@
     import { onMount } from 'svelte';
 
     let card: HTMLDivElement;
-    let visible = $state(false);
-
     let opacity = $state(0)
 
     function shinebrightlikeadiamond(value: number) {
@@ -143,19 +141,26 @@
     }
 
     .user-card::before {
-        content: '';
+    content: '';
     position: absolute;
     height: 300%;
     width: 300px;
     top: 0;
-    left: -200px;
+    left: -300px; /* just off the left edge */
     background: linear-gradient(90deg, transparent, rgba(246, 246, 246, 0.2), transparent);
     transform: rotate(45deg) translateY(-35%);
     animation: shine 2.5s ease infinite;
     z-index: 999;
     opacity: var(--opacity);
     transition: opacity 0.3s ease;
-    }
+    will-change: left; /* hint to browser */
+    pointer-events: none;
+    animation-play-state: paused;
+}
+
+.user-card:hover::before {
+    animation-play-state: running;
+}
 
     .user-card img {
         border-radius: 3rem;

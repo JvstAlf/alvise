@@ -1,23 +1,81 @@
-<script>
+<script lang="ts">
+import share from '$lib/assets/share.svg'
+import { cursor } from './state.svelte'
+import { onMount } from 'svelte'
     let iframe = $state('')
+    let el: HTMLDivElement;
+    let buttons: HTMLDivElement
+    let visible = $state(false)
+
+    let progress = $state(0);
+
+    function update() {
+        if (!el) return;
+
+        const rect = el.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+
+        const start = viewportHeight;
+        const end = viewportHeight * 0.3;
+
+        progress = 1 - (rect.top - end) / (start - end);
+
+        progress = Math.max(0, Math.min(1, progress));
+    }
+
+    onMount(() => {
+        update();
+
+        window.addEventListener('scroll', update);
+
+        return () => {
+            window.removeEventListener('scroll', update);
+        };
+    });
+
+    onMount(() => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    visible = true;
+                } else {
+                    visible = false
+                }
+            });
+        }, { 
+            threshold: 0.8,
+            rootMargin: "-10% 0px -10% 0px"
+        },
+      );
+        
+
+        observer.observe(buttons);
+    });
+
+    function copy() {
+  navigator.clipboard.writeText(iframe);
+    }
+
 </script>
 
 <section id="projects">
 
   <div class="bg1"></div>
 
-    <div class="websites">
-    <button onclick={() => iframe = 'https://alvise.me'}>Old Portfolio</button>
-    <button onclick={() => iframe = 'https://old.alvise.me'}>Really old Portfolio</button>
-    <button onclick={() => iframe = 'https://off-white.alvise.me'}>Off-White Project</button>
+    <div class="websites" bind:this={buttons} class:visible>
+    <button onclick={() => iframe = 'https://alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Old Portfolio<img src={share} alt="share"></button>
+    <button onclick={() => iframe = 'https://old.alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Really old Portfolio<img src={share} alt="share"></button>
+    <button onclick={() => iframe = 'https://off-white.alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Off-White Project<img src={share} alt="share"></button>
+    <button onclick={() => iframe = 'https://demonlist.alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Svelte Project<img src={share} alt="share"></button>
     </div>
 
     <div class="showcase">
-    <div class="container">
+    <div class="container" style:transform={`translateX(${(1 - progress) * 100}%)`} bind:this={el}>
       <div class="circle-container">
         <div class="circle red"></div>
         <div class="circle orange"></div>
         <div class="circle green"></div>
+        <p role="presentation" id="p" style="display: inline;" onclick={copy}>{iframe || 'alvise.me'}</p>
       </div>
 
       <div class="iframe">
@@ -58,11 +116,11 @@
     }
 
     @keyframes bg2 {
-        0% { opacity: 0.1; transform: scale(1); }
+        0% { opacity: 0.1; }
         25% { opacity: 0.3; }
-        50% { opacity: 0.2; transform: scale(1.03); }
+        50% { opacity: 0.2; }
         75% { opacity: 0.3; }
-        100% { opacity: 0.1; transform: scale(1); }
+        100% { opacity: 0.1; }
     }
 
     .websites {
@@ -72,14 +130,68 @@
         width: 30%;
         padding: 2rem;
         flex-direction: column;
-        gap: 2rem;
+        gap: 3rem;
+        opacity: 0;
+        transform: scale(0);
+        transition:
+        opacity 0.5s ease,
+        transform 0.6s cubic-bezier(.17,1.04,.79,1.14);
+        will-change: transform, opacity;
     }
 
-    .websites button {
-        padding: 1rem;
-        background-color: #303030;
+    .websites.visible {
+     opacity: 1;
+    transform: scale(1);
+    }
+
+
+        .websites button {
+        background: linear-gradient(#121212, #121212) padding-box,
+              linear-gradient(#454545, #aaa, #454545) border-box;
+        border-radius: 3rem;
+        border: 1px solid transparent;
+        box-shadow: 0 0 7px rgba(255, 255, 255, 0.1), inset 0 0 7px rgba(255, 255, 255, 0.1), 0 0 10px 10px rgba(255, 255, 255, 0.02);
+        background-color: transparent;
+        padding: 1.5rem;
+        width: 60%;
+        transition: 0.5s ease;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        font-family: "Climate Crisis", sans-serif;
+        font-variation-settings: "YEAR" 1990;
+        font-weight: 500;
+        font-size: 120%;
+        cursor: none;
+        -webkit-user-drag: none;
+        user-select: none;
+        -webkit-user-select: none;
+        line-height: 1.5rem;
+        position: relative;
+        overflow: visible;
+    }
+
+    .websites button:hover {
+        background: linear-gradient(#121212, #121212) padding-box,
+              linear-gradient(45deg, rgb(71, 71, 71), rgb(255, 255, 255), rgb(71, 71, 71)) border-box;
         border-radius: 2rem;
-        color: white;
+        border: 1px solid transparent;
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.35), inset 0 0 10px rgba(255, 255, 255, 0.35), 0 0 12px 12px rgba(255, 255, 255, 0.05);
+    }
+
+    button img {
+      position: absolute;
+      height: 70%;
+      right: -15px;
+      z-index: 50;
+      background-color: #151515;
+      padding: 0.25rem;
+      border-radius: 10px;
+      border: 1px solid #505050;
     }
 
     .showcase {
@@ -87,7 +199,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 2rem;
+        padding: 3rem;
     }
 
     .container {
@@ -98,12 +210,28 @@
   box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.7);
   margin-top: 1vh;
   z-index: 3;
+    }
 
-}
+
+    .circle-container p {
+      background-color: #445a6c;
+      padding: 0.1rem 1rem;
+      border-radius: 1rem;
+      margin-left: 0.5rem;
+      color: white;
+      border: 1px solid transparent;
+      user-select: text;
+    }
+
+    .circle-container p:hover {
+      border: 1px solid white;
+    }
 
 .circle-container {
   margin-top: 0.5m;
   margin-left: 0.8em;
+  margin-bottom: 0.2rem;
+  user-select: none;
 }
 
 .iframe {
@@ -111,7 +239,7 @@
   padding: 0.2rem 1rem 1rem 1rem;
   background-color: #222b33;
   height: 100%;
-  border-radius: 15px;
+  border-radius: 12px;
 }
 
 iframe {

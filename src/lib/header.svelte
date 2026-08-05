@@ -222,6 +222,7 @@
         animation: bg1 6s ease-in-out infinite;
         pointer-events: none;
         z-index: 1;
+        will-change: transform, opacity;
     }
 
     .bg1 {
@@ -236,21 +237,20 @@
         animation: bg2 8s ease-out infinite;
         pointer-events: none;
         z-index: 1;
+        will-change: transform, opacity;
     }
 
     @keyframes bg1 {
-        0% { opacity: 0.1; transform: scale(1); }
-        50% { opacity: 0.3; transform: scale(1.02); }
-        100% { opacity: 0.1; transform: scale(1); }
-    }
+    0% { opacity: 0.1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 0.1; }
+}
 
-    @keyframes bg2 {
-        0% { opacity: 0.1; transform: scale(1); }
-        25% { opacity: 0.3; }
-        50% { opacity: 0.2; transform: scale(1.03); }
-        75% { opacity: 0.3; }
-        100% { opacity: 0.1; transform: scale(1); }
-    }
+@keyframes bg2 {
+    0% { opacity: 0.1; }
+    50% { opacity: 0.2; }
+    100% { opacity: 0.1; }
+}
 
     .profile {
         width: 100%;
@@ -304,8 +304,8 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        transform-style: preserve-3d;
         cursor: none;
+        will-change: transform;
     }
 
     .vinyl :global(svg) {
@@ -325,6 +325,7 @@
     align-items: center;
     filter: drop-shadow(20px 25px 15px rgba(0, 0, 0, 0.6));
     transition: filter 0.3s ease;
+    will-change: filter;
 }
 
 .vinyl-shadow:hover {

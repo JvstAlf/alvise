@@ -7,8 +7,6 @@
         active
     } = $props();
 
-    let jobclass = $state('job')
-
     let opacity = $state(0)
 
     function shinebrightlikeadiamond(value: number) {
@@ -43,9 +41,12 @@
     class={active}
     class:visible
     bind:this={el}
+    role="presentation"
     style="--opacity: {opacity}"
     onmouseover={() => shinebrightlikeadiamond(100)}
     onmouseleave={() => shinebrightlikeadiamond(0)}
+    onfocus={() => shinebrightlikeadiamond(100)}
+    onblur={() => shinebrightlikeadiamond(0)}
 >
     <p>{anno}</p>
     <a href={href} target="_blank" onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>{lavoro}</a>
@@ -92,18 +93,25 @@
     }
 
     .job::before {
-        content: '';
-        position: absolute;
-        height: 300%;
-        width: 200px;
-        top: 0;
-        left: -60px;
-        background: linear-gradient(90deg, transparent, rgba(246, 246, 246, 0.3), transparent);
-        transform: rotate(45deg) translateY(-35%);
-        animation: shine 2.25s ease infinite;
-        z-index: 999;
-        opacity: var(--opacity);
-    }
+    content: '';
+    position: absolute;
+    height: 300%;
+    width: 200px;
+    top: 0;
+    left: -200px;
+    background: linear-gradient(90deg, transparent, rgba(246, 246, 246, 0.3), transparent);
+    transform: rotate(45deg) translateY(-35%);
+    animation: shine 2.25s ease infinite;
+    animation-play-state: paused;
+    z-index: 999;
+    opacity: var(--opacity);
+    pointer-events: none;
+    will-change: left;
+}
+
+.job:hover::before {
+    animation-play-state: running;
+}
 
     @keyframes shine {
         0% { left: -2000px; }
