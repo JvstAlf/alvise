@@ -6,6 +6,7 @@
     import { onMount } from 'svelte';
 
     let card: HTMLDivElement;
+    let about: HTMLDivElement;
     let opacity = $state(0)
 
     function shinebrightlikeadiamond(value: number) {
@@ -16,11 +17,25 @@
         VanillaTilt.init(card);
     })
 
+    let visible = $state(false);
+
+    onMount(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting;
+    }, {
+        threshold: 0.5
+    });
+
+    observer.observe(about);
+
+    return () => observer.disconnect();
+    });
+
 </script>
 
 <section id="about">
 
-    <div class="about">
+    <div class="about" bind:this={about}>
         <div>
             <h1>WORK EXPERIENCE</h1>
 
@@ -52,6 +67,7 @@
         <div>
             <h1>ME & MYSELF</h1>
 
+            <div class="card-wrapper" class:card-visible={visible}>
             <div class="user-card" bind:this={card} role="presentation"
             data-tilt data-tilt-max="8" data-tilt-speed="3000" data-tilt-perspective="1000" data-tilt-transition="true" data-tilt-scale="1.03" data-tilt-glare="true" data-tilt-reverse="false" data-tilt-max-glare="0.2"  data-tilt-reset="false" data-tilt-startX="12" data-tilt-startY="5"
             style="--opacity: {opacity}"
@@ -66,6 +82,7 @@
                     <button onclick={() => window.open('https://www.alvise.me/assets/Curriculum.pdf')}  onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>CURRICULUM</button>
                     <button onclick={() => window.open('https://drive.google.com/file/d/1nrTgpdwTIjI2ywoTlYrzBeXJNUphGwae/view?usp=sharing')} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>PORTFOLIO</button>
                 </div>
+            </div>
             </div>
 
         </div>
@@ -120,9 +137,16 @@
         text-align: center;
     }
 
-    .user-card {
+    .card-wrapper {
         width: 70%;
         height: 80%;
+        transform: scale(0.2);
+        transition: 0.7s ease;
+        opacity: 0;
+        z-index: 4;
+    }
+
+    .user-card {
         padding: 2rem;
         border-radius: 5rem;
         display: flex;
@@ -135,12 +159,16 @@
         box-shadow: 10px 10px 10px 5px rgba(0, 0, 0, 0.6);
         transform-style: preserve-3d;
         transform: perspective(1000px);
-        transition: 0.6s ease;
         position: relative;
         overflow: hidden;
         will-change: transform;
         backface-visibility: hidden;
-        z-index: 2;
+        z-index: 5;
+    }
+
+    .card-visible {
+        transform: scale(1);
+        opacity: 1;
     }
 
     .user-card::before {

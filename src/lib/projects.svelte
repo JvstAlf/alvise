@@ -5,7 +5,7 @@ import { onMount } from 'svelte'
     let iframe = $state('')
     let el: HTMLDivElement;
     let buttons: HTMLDivElement
-    let visible = $state(false)
+    let wrapper: HTMLDivElement
 
     let progress = $state(0);
 
@@ -33,24 +33,19 @@ import { onMount } from 'svelte'
         };
     });
 
-    onMount(() => {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    visible = true;
-                } else {
-                    visible = false
-                }
-            });
-        }, { 
-            threshold: 0.8,
-            rootMargin: "-10% 0px -10% 0px"
-        },
-      );
-        
+    let visible = $state(false);
 
-        observer.observe(buttons);
+onMount(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting;
+    }, {
+        threshold: 0.5
     });
+
+    observer.observe(wrapper);
+
+    return () => observer.disconnect();
+});
 
     function copy() {
   navigator.clipboard.writeText(iframe);
@@ -62,12 +57,14 @@ import { onMount } from 'svelte'
 
   <div class="bg1"></div>
 
-    <div class="websites" bind:this={buttons} class:visible>
-    <button onclick={() => iframe = 'https://alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Old Portfolio<img src={share} alt="share"></button>
-    <button onclick={() => iframe = 'https://old.alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Really old Portfolio<img src={share} alt="share"></button>
-    <button onclick={() => iframe = 'https://off-white.alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Off-White Project<img src={share} alt="share"></button>
-    <button onclick={() => iframe = 'https://demonlist.alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Svelte Project<img src={share} alt="share"></button>
+  <div class="wrapper" bind:this={wrapper}>
+    <div class="websites" class:websites-visible={visible} bind:this={buttons}>
+    <button class="buttons" onclick={() => iframe = 'https://alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Old Portfolio<img src={share} alt="share"></button>
+    <button class="buttons" onclick={() => iframe = 'https://old.alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Really old Portfolio<img src={share} alt="share"></button>
+    <button class="buttons" onclick={() => iframe = 'https://off-white.alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Off-White Project<img src={share} alt="share"></button>
+    <button class="buttons" onclick={() => iframe = 'https://demonlist.alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Svelte Project<img src={share} alt="share"></button>
     </div>
+  </div>
 
     <div class="showcase">
     <div class="container" style:transform={`translateX(${(1 - progress) * 100}%)`} bind:this={el}>
@@ -104,6 +101,11 @@ import { onMount } from 'svelte'
         position: relative;
     }
 
+    .wrapper {
+      height: 100%;
+      width: 30%;
+    }
+
     .bg1 {
         width: 100%;
         height: 100%;
@@ -130,25 +132,26 @@ import { onMount } from 'svelte'
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 30%;
+        width: 100%;
+        height: 100%;
         padding: 2rem;
         flex-direction: column;
         gap: 3rem;
         opacity: 0;
-        transform: scale(0);
+        transform: scale(0.2);
         transition:
-        opacity 0.5s ease,
-        transform 0.6s cubic-bezier(.17,1.04,.79,1.14);
+        opacity 1s ease,
+        transform 1s cubic-bezier(.17,1.04,.79,1.14);
         will-change: transform, opacity;
     }
 
-    .websites.visible {
-     opacity: 1;
+    .websites-visible {
+       opacity: 1;
     transform: scale(1);
     }
 
 
-        .websites button {
+        .buttons {
         background: linear-gradient(#121212, #121212) padding-box,
               linear-gradient(#454545, #aaa, #454545) border-box;
         border-radius: 3rem;
@@ -178,7 +181,7 @@ import { onMount } from 'svelte'
         overflow: visible;
     }
 
-    .websites button:hover {
+    .buttons:hover {
         background: linear-gradient(#121212, #121212) padding-box,
               linear-gradient(45deg, rgb(71, 71, 71), rgb(255, 255, 255), rgb(71, 71, 71)) border-box;
         border-radius: 2rem;
@@ -186,7 +189,7 @@ import { onMount } from 'svelte'
         box-shadow: 0 0 12px rgba(255, 255, 255, 0.35), inset 0 0 10px rgba(255, 255, 255, 0.35), 0 0 12px 12px rgba(255, 255, 255, 0.05);
     }
 
-    button img {
+    .buttons img {
       position: absolute;
       height: 70%;
       right: -15px;
