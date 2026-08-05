@@ -17,7 +17,7 @@
         display: none;
       }
     </style>
-    <radialGradient id="radial-gradient" cx="927" cy="13.67" fx="927" fy="13.67" r="728" gradientTransform="translate(0 484.72)" gradientUnits="userSpaceOnUse">
+    <radialGradient id="radial-gradient" cx="927" cy="1065.61" fx="927" fy="1065.61" r="728" gradientTransform="translate(0 1564) scale(1 -1)" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#fff"/>
       <stop offset=".24" stop-color="#fff" stop-opacity=".8"/>
       <stop offset=".5" stop-color="#fff" stop-opacity=".5"/>
@@ -26,7 +26,7 @@
       <stop offset="1" stop-color="#fff" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <g id="Layer_11" data-name="Layer_1" class="st2">
+  <g id="Layer_11" class="st2">
     <polygon class="st0" points="-1423.68 279.07 -1410.76 301.46 -1436.61 301.46 -1423.68 279.07"/>
     <polygon class="st0" points="-1452.32 277.47 -1426.47 277.47 -1439.39 299.85 -1452.32 277.47"/>
     <polygon class="st0" points="-1439.39 251.86 -1426.47 274.25 -1452.32 274.25 -1439.39 251.86"/>

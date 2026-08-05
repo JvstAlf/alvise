@@ -78,7 +78,10 @@
         width: 100dvw;
         height: 100dvh;
         background-color: #151515;
-        background-image: url('$lib/assets/header.svg');
+        background-image: url('$lib/assets/header.png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
         padding: 2rem;
         display: flex;
         align-items: center;

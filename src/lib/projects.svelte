@@ -93,7 +93,10 @@ import { onMount } from 'svelte'
         display: flex;
         padding: 2rem;
         background-color: #151515;
-        background-image: url('$lib/assets/header.svg');
+        background-image: url('$lib/assets/header.png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
         z-index: 1;
         display: flex;
         justify-content: center;

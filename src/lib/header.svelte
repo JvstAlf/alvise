@@ -170,8 +170,7 @@
         bind:this={vinyl}
         onclick={toggleRotate}
         onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}
-        role="button"
-        tabindex="0"
+        role="presentation"
         draggable="false">
         {@html vinylCover}
     </div>
@@ -184,6 +183,7 @@
                         onclick={changeSong}
                         alt="next"
                         draggable="false"
+                        role="presentation"
                     />
                 </div>
             </div>
@@ -201,7 +201,7 @@
         align-items: center;
         flex-direction: column;
         background-color: #151515;
-        background-image: url('$lib/assets/header.svg');
+        background-image: url('$lib/assets/header.png');
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;
