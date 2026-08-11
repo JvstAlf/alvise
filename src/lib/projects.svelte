@@ -1,5 +1,6 @@
 <script lang="ts">
 import share from '$lib/assets/share.svg'
+  import { scale } from 'svelte/transition';
 import { cursor } from './state.svelte'
 import { onMount } from 'svelte'
     let iframe = $state('')
@@ -56,6 +57,9 @@ onMount(() => {
 <section id="projects">
 
   <div class="bg1"></div>
+  <div class="bg2"></div>
+
+<div class="content">
 
   <div class="wrapper" bind:this={wrapper}>
     <div class="websites" class:websites-visible={visible} bind:this={buttons}>
@@ -72,14 +76,16 @@ onMount(() => {
         <div class="circle red"></div>
         <div class="circle orange"></div>
         <div class="circle green"></div>
-        <p role="presentation" id="p" style="display: inline;" onclick={copy}>{iframe || 'alvise.me'}</p>
+        <p role="presentation" id="p" onclick={copy}>{iframe || 'alvise.me'}</p>
       </div>
 
       <div class="iframe">
-      <iframe src={iframe} frameborder="0" title="projects"></iframe>
+      <iframe src={iframe} frameborder="0" title="projects" onmouseenter={() => {cursor.size = 0}} onmouseleave={() => {cursor.size = 8}} role="presentation"></iframe>
       </div>
     </div>
     </div>
+
+</div>
     
 </section>
 
@@ -88,36 +94,75 @@ onMount(() => {
         width: 100dvw;
         height: 100dvh;
         display: flex;
-        padding: 2rem;
         background-color: #151515;
         background-image: url('$lib/assets/header.png');
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;
-        z-index: 1;
         display: flex;
         justify-content: center;
         align-items: center;
         position: relative;
+        isolation: isolate;
+    }
+
+    .content {
+      position: relative;
+    z-index: 1;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
     }
 
     .wrapper {
       height: 100%;
       width: 30%;
+      position: relative;
+      z-index: 3;
     }
 
     .bg1 {
-        width: 100%;
-        height: 100%;
         position: absolute;
-        background-image: url('$lib/assets/bg2.svg');
-        background-repeat: no-repeat;
-        background-size: contain;
-        top: -50%;
-        right: -60%;
-        animation: bg2 8s ease-out infinite;
-        pointer-events: none;
-        z-index: -1;
+    width: 100%;
+    height: 100%;
+
+    top: -50%;
+    right: -60%;
+
+    background-image: url('$lib/assets/bg2.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+
+    opacity: 0.1;
+    pointer-events: none;
+
+    z-index: -1;
+
+    animation: bg2 8s ease-out infinite;
+    }
+
+    .bg2 {
+        position: absolute;
+    width: 100%;
+    height: 100%;
+
+    bottom: -50%;
+    left: -60%;
+
+    background-image: url('$lib/assets/bg1viola.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+
+    opacity: 0.1;
+    pointer-events: none;
+
+    z-index: -1;
+
+    animation: bg1 8s ease-out infinite;
     }
 
     @keyframes bg2 {
@@ -127,6 +172,13 @@ onMount(() => {
         75% { opacity: 0.3; }
         100% { opacity: 0.1; }
     }
+
+    @keyframes bg1 {
+        0% { opacity: 0.1; }
+        50% { opacity: 0.2; }
+        100% { opacity: 0.1; }
+    }
+
 
     .websites {
         display: flex;
@@ -143,6 +195,8 @@ onMount(() => {
         opacity 1s ease,
         transform 1s cubic-bezier(.17,1.04,.79,1.14);
         will-change: transform, opacity;
+        position: relative;
+        z-index: 2;
     }
 
     .websites-visible {
@@ -151,7 +205,7 @@ onMount(() => {
     }
 
 
-        .buttons {
+    .buttons {
         background: linear-gradient(#121212, #121212) padding-box,
               linear-gradient(#454545, #aaa, #454545) border-box;
         border-radius: 3rem;
@@ -206,6 +260,7 @@ onMount(() => {
         justify-content: center;
         align-items: center;
         padding: 3rem;
+        z-index: 2;
     }
 
     .container {
@@ -215,18 +270,23 @@ onMount(() => {
   border-radius: 15px;
   box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.7);
   margin-top: 1vh;
-  z-index: 3;
     }
 
 
     .circle-container p {
       background-color: #445a6c;
+      text-align: center;
       padding: 0.1rem 1rem;
       border-radius: 1rem;
       margin-left: 0.5rem;
       color: white;
       border: 1px solid transparent;
       user-select: text;
+      display: inline;
+      position: absolute;
+      top: 60%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
 
     .circle-container p:hover {
@@ -235,9 +295,11 @@ onMount(() => {
 
 .circle-container {
   margin-top: 0.5m;
-  margin-left: 0.8em;
   margin-bottom: 0.2rem;
+  padding: 0 1rem;
   user-select: none;
+  width: 100%;
+  position: relative;
 }
 
 .iframe {

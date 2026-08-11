@@ -78,7 +78,7 @@
         transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.4s ease, scale 0.4s ease;
         padding: 2rem;
         border-radius: 2rem;
-        background-color: rgb(220, 220, 220);
+        background-color: rgb(210, 210, 210);
         z-index: 10;
         color: black;
         overflow: hidden;

@@ -3,6 +3,7 @@
     import Header from '$lib/header.svelte';
     import About from '$lib/about.svelte';
     import Projects from '$lib/projects.svelte';
+    import Art from '$lib/art.svelte';
     import { onMount } from 'svelte';
 
 let check = $state(false);
@@ -28,3 +29,4 @@ onMount(() => {
 <Header />
 <About />
 <Projects />
+<Art />
