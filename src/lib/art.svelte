@@ -4,6 +4,18 @@
   import { cursor } from '$lib/state.svelte'
 
   let ring: HTMLDivElement;
+  let el: HTMLDivElement;
+  let visible = $state(false)
+
+  onMount(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting;
+    }, {
+        threshold: 0.5
+    });
+
+    observer.observe(el);
+});
 
   const imageUrls = [
     'https://old.alvise.me/images/shootingforthestars.webp',
@@ -210,9 +222,12 @@
     onpointerdown={handlePointerDown}
     onpointermove={handlePointerMove}
     onpointerup={handlePointerUp}
-    onpointercancel={handlePointerUp}>
+    onpointercancel={handlePointerUp}
+    bind:this={el}>
 
-    <div class="container">
+    <h1>ART</h1>
+
+    <div class="container" class:container-visible={visible}>
 
       <div
         class="ring"
@@ -227,9 +242,7 @@
 
       </div>
 
-    </div>
-
-    <button
+      <button
       class="open-button"
       aria-label="Open current artwork"
       onclick={(event) => {
@@ -243,6 +256,8 @@
     >
       ↗
     </button>
+
+    </div>
 
   </div>
 
@@ -272,10 +287,23 @@
     overflow: hidden;
   }
 
-
-  /* =========================================
-     SHOWCASE
-  ========================================= */
+   h1 {
+        font-family: "Climate Crisis", sans-serif;
+        font-size: 500%;
+        font-weight: 1000;
+        text-shadow: 
+        -2px -2px 0 var(--purple),  
+        2px -2px 0 var(--purple),
+        -2px 2px 0 var(--purple),
+        2px 2px 0 var(--purple);
+        width: 100%;
+        text-align: center;
+        color: white;
+        position: relative;
+        padding: 2rem 0;
+        text-decoration: underline;
+        text-underline-offset: 12px;
+    }
 
   .showcase {
     width: 70%;
@@ -288,35 +316,29 @@
     touch-action: none;
   }
 
-  /* =========================================
-     3D CONTAINER
-  ========================================= */
-
   .container {
-    position: absolute;
+    position: relative;
 
-    width: 500px;
-    height: 707px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    height: 100%;
 
-    left: 50%;
-    top: 50%;
-
-    transform:
-      translate(-50%, -50%);
+    transition: 1s ease;
+    scale: 0;
 
     perspective: 2500px;
 
     pointer-events: none;
   }
 
-  .ring {
-    position: absolute;
+  .container-visible {
+    scale: 1;
+  }
 
+  .ring {
     width: 500px;
     height: 707px;
-
-    left: 0;
-    top: 0;
 
     transform-style: preserve-3d;
 
@@ -384,11 +406,11 @@
   .open-button {
     position: absolute;
 
-    top: 1.5rem;
-    right: 1.5rem;
+    top: 0;
+    right: 0;
 
-    width: 48px;
-    height: 48px;
+    width: 64px;
+    height: 64px;
 
     display: flex;
     align-items: center;
@@ -404,9 +426,10 @@
     background:
       rgba(0, 0, 0, 0.45);
 
-    color: white;
+    color: var(--purple);
 
-    font-size: 1.3rem;
+    font-size: 2rem;
+    font-weight: 600;
     cursor: none;
 
     backdrop-filter: blur(12px);
@@ -423,9 +446,9 @@
 
   .open-button:hover {
     background:
-      rgba(255, 255, 255, 0.2);
+      rgba(255, 255, 255, 0.1);
 
-    transform: scale(1.08);
+    transform: scale(1.05);
   }
 
 

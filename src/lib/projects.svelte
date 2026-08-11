@@ -1,11 +1,9 @@
 <script lang="ts">
 import share from '$lib/assets/share.svg'
-  import { scale } from 'svelte/transition';
 import { cursor } from './state.svelte'
 import { onMount } from 'svelte'
     let iframe = $state('')
     let el: HTMLDivElement;
-    let buttons: HTMLDivElement
     let wrapper: HTMLDivElement
 
     let progress = $state(0);
@@ -59,10 +57,14 @@ onMount(() => {
   <div class="bg1"></div>
   <div class="bg2"></div>
 
+  <div class="header">
+    <h1>PROJECTS</h1>
+  </div>
+
 <div class="content">
 
   <div class="wrapper" bind:this={wrapper}>
-    <div class="websites" class:websites-visible={visible} bind:this={buttons}>
+    <div class="websites" class:websites-visible={visible}>
     <button class="buttons" onclick={() => iframe = 'https://alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Old Portfolio<img src={share} alt="share"></button>
     <button class="buttons" onclick={() => iframe = 'https://old.alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Really old Portfolio<img src={share} alt="share"></button>
     <button class="buttons" onclick={() => iframe = 'https://off-white.alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Off-White Project<img src={share} alt="share"></button>
@@ -104,6 +106,29 @@ onMount(() => {
         align-items: center;
         position: relative;
         isolation: isolate;
+        flex-direction: column;
+    }
+
+    .header {
+      width: 100%;
+    }
+
+    h1 {
+        font-family: "Climate Crisis", sans-serif;
+        font-size: 500%;
+        font-weight: 1000;
+        text-shadow: 
+        -2px -2px 0 var(--purple),  
+        2px -2px 0 var(--purple),
+        -2px 2px 0 var(--purple),
+        2px 2px 0 var(--purple);
+        width: 100%;
+        text-align: center;
+        color: white;
+        position: relative;
+        padding: 2rem 0;
+        text-decoration: underline;
+        text-underline-offset: 12px;
     }
 
     .content {
@@ -116,6 +141,7 @@ onMount(() => {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: row;
     }
 
     .wrapper {
