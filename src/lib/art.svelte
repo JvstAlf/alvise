@@ -717,6 +717,7 @@
 		.open-button {
 			width: 42px;
 			height: 42px;
+			top: 1rem;
 		}
 	}
 

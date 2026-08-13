@@ -13,14 +13,6 @@ export const imageUrls = [
 const imageCount = imageUrls.length;
 const angle = 360 / imageCount;
 
-const imageWidth = 400;
-const imageHeight = imageWidth * (297 / 210);
-
-/*
- * Distance from the center of the ring.
- */
-const radius = 500;
-
 export function initPosters(
 	ring: HTMLDivElement
 ): () => void {
@@ -28,57 +20,82 @@ export function initPosters(
 		const images =
 			ring.querySelectorAll<HTMLElement>('.img');
 
-		/*
-		 * Reset everything first.
-		 */
-		gsap.set(ring, {
-			clearProps: 'all',
-			x: 0,
-			y: 0,
-			z: 0,
-			rotationX: 0,
-			rotationY: 180,
-			rotationZ: 0
-		});
+		const mm = gsap.matchMedia();
 
-		/*
-		 * Position every image around the
-		 * exact center of the ring.
-		 */
-		gsap.set(images, {
-			width: imageWidth,
-			height: imageHeight,
+		mm.add(
+			{
+				desktop: '(min-width: 769px)',
+				mobile: '(max-width: 768px)'
+			},
+			(context) => {
+				const { mobile } = context.conditions!;
 
-			left: -imageWidth / 2,
-			top: -imageHeight / 2,
+				/*
+				 * Responsive poster size.
+				 */
+				const imageWidth = mobile ? 240 : 400;
+				const imageHeight =
+					imageWidth * (297 / 210);
 
-			rotateY: (i: number) =>
-				i * -angle,
+				/*
+				 * Smaller radius on mobile so
+				 * the carousel doesn't become too wide.
+				 */
+				const radius = mobile ? 300 : 500;
 
-			transformOrigin:
-				`50% 50% ${radius}px`,
+				/*
+				 * Reset everything first.
+				 */
+				gsap.set(ring, {
+					clearProps: 'all',
+					x: 0,
+					y: 0,
+					z: 0,
+					rotationX: 0,
+					rotationY: 180,
+					rotationZ: 0
+				});
 
-			z: -radius,
+				/*
+				 * Position every image around the
+				 * exact center of the ring.
+				 */
+				gsap.set(images, {
+					width: imageWidth,
+					height: imageHeight,
 
-			backgroundImage: (i: number) =>
-				`url("${imageUrls[i]}")`,
+					left: -imageWidth / 2,
+					top: -imageHeight / 2,
 
-			backgroundPosition: 'center',
-			backgroundSize: 'cover',
+					rotateY: (i: number) =>
+						i * -angle,
 
-			backfaceVisibility: 'hidden'
-		});
+					transformOrigin:
+						`50% 50% ${radius}px`,
 
-		/*
-		 * Entrance animation.
-		 */
-		gsap.from(images, {
-			duration: 1.2,
-			y: 100,
-			opacity: 0,
-			stagger: 0.08,
-			ease: 'expo.out'
-		});
+					z: -radius,
+
+					backgroundImage: (i: number) =>
+						`url("${imageUrls[i]}")`,
+
+					backgroundPosition: 'center',
+					backgroundSize: 'cover',
+
+					backfaceVisibility: 'hidden'
+				});
+
+				/*
+				 * Entrance animation.
+				 */
+				gsap.from(images, {
+					duration: 1.2,
+					y: 100,
+					opacity: 0,
+					stagger: 0.08,
+					ease: 'expo.out'
+				});
+			}
+		);
 	}, ring);
 
 	return () => {
@@ -119,7 +136,6 @@ export function createPosterController(
 		event: PointerEvent
 	) {
 		isDragging = true;
-
 		lastX = event.clientX;
 
 		const target =

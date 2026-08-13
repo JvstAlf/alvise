@@ -12,12 +12,6 @@ export const imageUrls = [
 const imageCount = imageUrls.length;
 const angle = 360 / imageCount;
 
-const imageHeight = 350;
-const imageWidth =
-	imageHeight * (1920 / 1080);
-
-const radius = 600;
-
 export function initPosters(
 	ring: HTMLDivElement
 ): () => void {
@@ -25,56 +19,88 @@ export function initPosters(
 		const images =
 			ring.querySelectorAll<HTMLElement>('.img');
 
-		/*
-		 * Reset ring completely.
-		 */
-		gsap.set(ring, {
-			clearProps: 'all',
-			x: 0,
-			y: 0,
-			z: 0,
-			rotationX: 0,
-			rotationY: 180,
-			rotationZ: 0
-		});
+		const mm = gsap.matchMedia();
 
-		/*
-		 * Position cards around the center.
-		 */
-		gsap.set(images, {
-			width: imageWidth,
-			height: imageHeight,
+		mm.add(
+			{
+				desktop: '(min-width: 769px)',
+				mobile: '(max-width: 768px)'
+			},
+			(context) => {
+				const { mobile } = context.conditions!;
 
-			left: -imageWidth / 2,
-			top: -imageHeight / 2,
+				/*
+				 * Responsive card dimensions.
+				 *
+				 * Desktop:
+				 * 350px high
+				 *
+				 * Mobile:
+				 * 200px high
+				 */
+				const imageHeight = mobile ? 180 : 350;
 
-			rotateY: (i: number) =>
-				i * -angle,
+				const imageWidth =
+					imageHeight * (1920 / 1080);
 
-			transformOrigin:
-				`50% 50% ${radius}px`,
+				/*
+				 * Smaller radius on mobile so
+				 * the carousel stays within the viewport.
+				 */
+				const radius = mobile ? 350 : 600;
 
-			z: -radius,
+				/*
+				 * Reset ring completely.
+				 */
+				gsap.set(ring, {
+					clearProps: 'all',
+					x: 0,
+					y: 0,
+					z: 0,
+					rotationX: 0,
+					rotationY: 180,
+					rotationZ: 0
+				});
 
-			backgroundImage: (i: number) =>
-				`url("${imageUrls[i]}")`,
+				/*
+				 * Position cards around the center.
+				 */
+				gsap.set(images, {
+					width: imageWidth,
+					height: imageHeight,
 
-			backgroundPosition: 'center',
-			backgroundSize: 'cover',
+					left: -imageWidth / 2,
+					top: -imageHeight / 2,
 
-			backfaceVisibility: 'hidden'
-		});
+					rotateY: (i: number) =>
+						i * -angle,
 
-		/*
-		 * Entrance animation.
-		 */
-		gsap.from(images, {
-			duration: 1.2,
-			y: 100,
-			opacity: 0,
-			stagger: 0.08,
-			ease: 'expo.out'
-		});
+					transformOrigin:
+						`50% 50% ${radius}px`,
+
+					z: -radius,
+
+					backgroundImage: (i: number) =>
+						`url("${imageUrls[i]}")`,
+
+					backgroundPosition: 'center',
+					backgroundSize: 'cover',
+
+					backfaceVisibility: 'hidden'
+				});
+
+				/*
+				 * Entrance animation.
+				 */
+				gsap.from(images, {
+					duration: 1.2,
+					y: 100,
+					opacity: 0,
+					stagger: 0.08,
+					ease: 'expo.out'
+				});
+			}
+		);
 	}, ring);
 
 	return () => {

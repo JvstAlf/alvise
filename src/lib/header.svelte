@@ -186,8 +186,9 @@
             songNameOpacity = 0;
             vinyl.style.animation = "";
         });
-
-        VanillaTilt.init(io);
+        if(!check){
+VanillaTilt.init(io);
+        }
 
         nameOpacity = 1;
 
@@ -646,10 +647,13 @@
         .music-player {
             width: 100%;
             height: 40%;
+            justify-content: start;
+            align-items: start;
         }
 
         .player {
             height: 80%;
+            align-items: start;
         }
 
         .vinyl {
