@@ -663,6 +663,8 @@ VanillaTilt.init(io);
         .song-name {
             font-size: 100%;
             padding: 0.1rem 0.25rem;
+            text-align: center;
+            width: 100%;
         }
 
         .song-name:last-child {
