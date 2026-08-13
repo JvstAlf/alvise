@@ -1,495 +1,743 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { gsap } from 'gsap';
-  import { cursor } from '$lib/state.svelte'
+	import { onMount, tick } from 'svelte';
+	import { cursor } from '$lib/state.svelte';
 
-  let ring: HTMLDivElement;
-  let el: HTMLDivElement;
-  let visible = $state(false)
+	type CarouselName =
+		| 'posters-carousel.ts'
+		| 'thumbnails-carousel.ts';
 
-  onMount(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-        visible = entry.isIntersecting;
-    }, {
-        threshold: 0.5
-    });
+	let carousel = $state<CarouselName>('posters-carousel.ts');
 
-    observer.observe(el);
-});
+	let imageUrls = $state<string[]>([]);
 
-  const imageUrls = [
-    'https://old.alvise.me/images/shootingforthestars.webp',
-    'https://old.alvise.me/images/eyesnsmile.webp',
-    'https://old.alvise.me/images/eyesneverlies.webp',
-    'https://old.alvise.me/images/sicfnmt.webp',
-    'https://old.alvise.me/images/norainnoflowers.webp',
-    'https://old.alvise.me/images/nomorecho1.webp',
-    'https://old.alvise.me/images/nomorecho2.webp'
-  ];
+	let ring: HTMLDivElement;
+	let el: HTMLDivElement;
+	let buttons: HTMLDivElement;
 
-  const imageCount = imageUrls.length;
-  const angle = 360 / imageCount;
+	let visible = $state(false);
 
-  const imageWidth = 500;
-  const imageHeight = imageWidth * (297 / 210);
+	let posters: any = null;
 
-  const radius = 650;
+	let cleanupCarousel: (() => void) | undefined;
 
-  let currentImage = 0;
+	let loading = false;
 
-  let isDragging = $state(false);
-  let startX = 0;
-  let lastX = 0;
+	async function loadCarousel(name: CarouselName) {
+		loading = true;
 
-  onMount(() => {
-    const ctx = gsap.context(() => {
-      /*
-       * Position images around the 3D ring.
-       */
-      gsap.set('.img', {
-        width: imageWidth,
-        height: imageHeight,
+		/*
+		 * Completely destroy the previous carousel.
+		 */
+		if (cleanupCarousel) {
+			cleanupCarousel();
+			cleanupCarousel = undefined;
+		}
 
-        rotateY: (i: number) =>
-          i * -angle,
+		posters = null;
 
-        transformOrigin:
-          `50% 50% ${radius}px`,
+		/*
+		 * Reset the ring before installing the
+		 * new carousel.
+		 */
+		if (ring) {
+			ring.removeAttribute('style');
 
-        z: -radius,
+			const oldImages =
+				ring.querySelectorAll<HTMLElement>('.img');
 
-        backgroundImage: (i: number) =>
-          `url("${imageUrls[i]}")`,
+			oldImages.forEach((image) => {
+				image.removeAttribute('style');
+			});
+		}
 
-        backgroundPosition: 'center',
-        backgroundSize: 'cover',
+		/*
+		 * Load the requested carousel.
+		 */
+		const module =
+			name === 'posters-carousel.ts'
+				? await import('$lib/components/posters-carousel')
+				: await import('$lib/components/thumbnails-carousel');
 
-        backfaceVisibility: 'hidden'
-      });
+		/*
+		 * Replace the images.
+		 */
+		imageUrls = [...module.imageUrls];
 
-      /*
-       * Initial rotation.
-       */
-      gsap.set(ring, {
-        rotationY: 180
-      });
+		/*
+		 * Wait until Svelte has created the
+		 * new .img elements.
+		 */
+		await tick();
 
-      /*
-       * Intro.
-       */
-      gsap.from('.img', {
-        duration: 1.5,
-        y: 200,
-        opacity: 0,
-        stagger: 0.1,
-        ease: 'expo'
-      });
-    });
+		/*
+		 * Make absolutely sure the ring contains
+		 * the correct number of images.
+		 */
+		if (!ring) {
+			loading = false;
+			return;
+		}
 
-    return () => {
-      ctx.revert();
-    };
-  });
+		/*
+		 * Initialize the carousel.
+		 */
+		cleanupCarousel = module.initPosters(ring);
 
-  /*
-   * Calculate which artwork is currently
-   * closest to the front.
-   */
-  function updateCurrentImage() {
-    if (!ring) return;
+		/*
+		 * Create a new controller.
+		 */
+		posters = module.createPosterController(ring);
 
-    const rotation =
-      gsap.getProperty(
-        ring,
-        'rotationY'
-      ) as number;
+		loading = false;
+	}
 
-    /*
-     * Normalize rotation to 0–360.
-     */
-    const normalized =
-      ((rotation % 360) + 360) % 360;
+	async function switchCarousel(name: CarouselName) {
+		if (carousel === name || loading) {
+			return;
+		}
 
-    /*
-     * Find the closest card.
-     */
-    let index =
-      Math.round(
-        normalized / angle
-      ) % imageCount;
+		/*
+		 * Hide the current carousel while replacing it.
+		 */
+		visible = false;
 
-    /*
-     * Keep index positive.
-     */
-    if (index < 0) {
-      index += imageCount;
-    }
+		carousel = name;
 
-    currentImage = index;
-  }
+		/*
+		 * Wait for the transition to start.
+		 */
+		await tick();
 
+		await loadCarousel(name);
 
-  /*
-   * Begin dragging.
-   */
-  function handlePointerDown(
-    event: PointerEvent
-  ) {
-    isDragging = true;
+		/*
+		 * Show the new carousel.
+		 */
+		requestAnimationFrame(() => {
+			visible = true;
+		});
+	}
 
-    startX = event.clientX;
-    lastX = event.clientX;
+	onMount(() => {
+		/*
+		 * Initial carousel.
+		 */
+		loadCarousel('posters-carousel.ts').then(() => {
+			requestAnimationFrame(() => {
+				visible = true;
+			});
+		});
 
-    (
-      event.currentTarget as HTMLElement
-    ).setPointerCapture(
-      event.pointerId
-    );
-  }
+		/*
+		 * Intersection observer.
+		 */
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				visible = entry.isIntersecting;
+			},
+			{
+				threshold: 0.5
+			}
+		);
+			observer.observe(el);
+			observer.observe(buttons);
 
+		return () => {
+			observer.disconnect();
 
-  /*
-   * Rotate carousel.
-   */
-  function handlePointerMove(
-    event: PointerEvent
-  ) {
-    if (!isDragging) return;
-
-    const currentX = event.clientX;
-
-    const delta =
-      currentX - lastX;
-
-    /*
-     * Lower number = slower rotation.
-     */
-    gsap.set(ring, {
-      rotationY:
-        `-=${delta * 0.2}`
-    });
-
-    lastX = currentX;
-
-    updateCurrentImage();
-  }
-
-
-  /*
-   * Stop dragging.
-   */
-  function handlePointerUp(
-    event: PointerEvent
-  ) {
-    isDragging = false;
-
-    const target =
-      event.currentTarget as HTMLElement;
-
-    if (
-      target.hasPointerCapture(
-        event.pointerId
-      )
-    ) {
-      target.releasePointerCapture(
-        event.pointerId
-      );
-    }
-
-    updateCurrentImage();
-  }
-
-
-  /*
-   * Open currently visible artwork.
-   */
-  function openCurrentImage() {
-    window.open(
-      imageUrls[currentImage],
-      '_blank',
-      'noopener,noreferrer'
-    );
-  }
+			if (cleanupCarousel) {
+				cleanupCarousel();
+				cleanupCarousel = undefined;
+			}
+		};
+	});
 </script>
 
-
 <section>
+<div class="title">
+	<h1>ART</h1>
+</div>
+	
+	<div class="bg-wrapper">
 
-  <div
-    class="showcase"
-    class:dragging={isDragging}
-    role="presentation"
-    onpointerdown={handlePointerDown}
-    onpointermove={handlePointerMove}
-    onpointerup={handlePointerUp}
-    onpointercancel={handlePointerUp}
-    bind:this={el}>
+	<div class="bg1"></div>
 
-    <h1>ART</h1>
+	<div class="art">
 
-    <div class="container" class:container-visible={visible}>
+		<!-- CAROUSEL -->
 
-      <div
-        class="ring"
-        bind:this={ring}
-      >
+		<div
+			class="showcase"
+			class:dragging={posters?.isDragging}
+			role="presentation"
+			onpointerdown={(event) =>
+				posters?.handlePointerDown(event)
+			}
+			onpointermove={(event) =>
+				posters?.handlePointerMove(event)
+			}
+			onpointerup={(event) =>
+				posters?.handlePointerUp(event)
+			}
+			onpointercancel={(event) =>
+				posters?.handlePointerUp(event)
+			}
+			bind:this={el}
+		>
+			<div
+				class="container"
+				class:container-visible={visible}
+			>
+				<div
+					class="ring"
+					bind:this={ring}
+				>
+					{#each imageUrls as image}
+						<div
+							class="img"
+							data-image={image}
+						></div>
+					{/each}
+				</div>
 
-        {#each imageUrls as image}
+				<!-- OPEN BUTTON -->
 
-          <div class="img"></div>
+				<button
+					class="open-button"
+					aria-label="Open current artwork"
+					onclick={(event) => {
+						event.stopPropagation();
+						posters?.openCurrentImage();
+					}}
+					onpointerdown={(event) => {
+						event.stopPropagation();
+					}}
+					onmouseenter={() => {
+						cursor.size = 20;
+						cursor.color =
+							'rgba(115, 88, 252, 0.8)';
+					}}
+					onmouseleave={() => {
+						cursor.size = 8;
+						cursor.color =
+							'rgba(255, 255, 255, 0.7)';
+					}}
+				>
+					↗
+				</button>
+			</div>
+		</div>
 
-        {/each}
+		<!-- CATEGORY BUTTONS -->
 
-      </div>
+		<div
+			class="art-showcase"
+			bind:this={buttons}
+			class:art-showcase-visible={visible}
+		>
+			<!-- POSTERS -->
 
-      <button
-      class="open-button"
-      aria-label="Open current artwork"
-      onclick={(event) => {
-        event.stopPropagation();
-        openCurrentImage();
-      }}
-      onpointerdown={(event) => {
-        event.stopPropagation();
-      }}
-      onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}
-    >
-      ↗
-    </button>
+			<button
+				class="buttons"
+				class:active={
+					carousel === 'posters-carousel.ts'
+				}
+				onclick={() =>
+					switchCarousel(
+						'posters-carousel.ts'
+					)
+				}
+				onmouseenter={() => {
+					cursor.size = 20;
+					cursor.color =
+						'rgba(115, 88, 252, 0.8)';
+				}}
+				onmouseleave={() => {
+					cursor.size = 8;
+					cursor.color =
+						'rgba(255, 255, 255, 0.7)';
+				}}
+			>
+				Posters
+			</button>
 
-    </div>
+			<!-- THUMBNAILS -->
 
-  </div>
-
+			<button
+				class="buttons"
+				class:active={
+					carousel ===
+					'thumbnails-carousel.ts'
+				}
+				onclick={() =>
+					switchCarousel(
+						'thumbnails-carousel.ts'
+					)
+				}
+				onmouseenter={() => {
+					cursor.size = 20;
+					cursor.color =
+						'rgba(115, 88, 252, 0.8)';
+				}}
+				onmouseleave={() => {
+					cursor.size = 8;
+					cursor.color =
+						'rgba(255, 255, 255, 0.7)';
+				}}
+			>
+				Thumbnails
+			</button>
+		</div>
+	</div>
+	</div>
 </section>
 
-
 <style>
-  section {
-    width: 100dvw;
-    height: 100dvh;
+	section {
+		width: 100dvw;
+		height: 100dvh;
 
-    background-color: #151515;
+		background-color: #151515;
+		background-image: url('$lib/assets/header.png');
 
-    background-image:
-      url('$lib/assets/header.png');
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: cover;
+		overflow: hidden;
+	}
 
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
+	.title {
+		width: 100%;
+		height: 15%;
+	}
 
-    padding: 2rem;
+	.bg-wrapper {
+		width: 100%;
+		height: 85%;
+		padding: 2rem;
+		position: relative;
+		display: flex;
+		flex-direction: column;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+		align-items: center;
+		justify-content: center;
+	}
 
-    overflow: hidden;
+	h1 {
+		font-family: 'Climate Crisis', sans-serif;
+
+		font-size: clamp(3rem, 8vw, 6rem);
+		font-weight: 1000;
+
+		text-shadow:
+			-2px -2px 0 var(--purple),
+			2px -2px 0 var(--purple),
+			-2px 2px 0 var(--purple),
+			2px 2px 0 var(--purple);
+
+		width: 100%;
+
+		text-align: center;
+
+		color: white;
+
+		position: relative;
+
+		margin: 0;
+		padding: 1rem 0;
+
+		text-decoration: underline;
+		text-underline-offset: 12px;
+
+		flex-shrink: 0;
+	}
+
+	.art {
+		display: flex;
+		width: 100%;
+		height: 100%;
+	}
+
+	.showcase {
+		width: 70%;
+		height: 100%;
+
+		position: relative;
+
+		border-radius: 2rem;
+
+		display: flex;
+
+		justify-content: center;
+		align-items: center;
+
+		overflow: hidden;
+	}
+
+	.container {
+		position: absolute;
+
+		inset: 0;
+
+		width: 100%;
+		height: 100%;
+
+		display: flex;
+
+		justify-content: center;
+		align-items: center;
+
+		perspective: 2500px;
+
+		transform: scale(0);
+
+		opacity: 0;
+
+		transition:
+			transform 1s cubic-bezier(
+				0.17,
+				1.04,
+				0.79,
+				1.14
+			),
+			opacity 0.5s ease;
+
+		box-sizing: border-box;
+	}
+
+	.container-visible {
+		transform: scale(1);
+		opacity: 1;
+	}
+
+	.ring {
+		position: absolute;
+
+		left: 50%;
+		top: 50%;
+
+		width: 0;
+		height: 0;
+
+		transform-style: preserve-3d;
+
+		background: none;
+
+		border: none;
+		outline: none;
+
+		box-shadow: none;
+
+		pointer-events: none;
+	}
+
+	.img {
+		position: absolute;
+
+		left: 0;
+		top: 0;
+
+		transform-style: preserve-3d;
+
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: cover;
+
+		backface-visibility: hidden;
+
+		border: none;
+		outline: none;
+
+		border-radius: 1rem;
+
+		box-shadow:
+			10px 15px 35px rgb(0, 0, 0);
+
+		pointer-events: none;
+
+		transform-origin: center center;
+	}
+
+	.img::after {
+		content: '';
+
+		position: absolute;
+
+		inset: 0;
+
+		border-radius: 1rem;
+
+		pointer-events: none;
+
+		background:
+			linear-gradient(
+				135deg,
+				rgba(255, 255, 255, 0.12),
+				transparent 35%,
+				transparent 70%,
+				rgba(255, 255, 255, 0.05)
+			);
+
+		mix-blend-mode: screen;
+	}
+
+	.art-showcase {
+		width: 30%;
+		height: 100%;
+
+		display: flex;
+
+		flex-direction: column;
+
+		align-items: center;
+		justify-content: center;
+
+		gap: 3rem;
+
+		opacity: 0;
+
+		transform: scale(0.2);
+
+		transition:
+			opacity 1s ease,
+			transform 1s
+				cubic-bezier(
+					0.17,
+					1.04,
+					0.79,
+					1.14
+				);
+
+		will-change:
+			transform,
+			opacity;
+	}
+
+	.art-showcase-visible {
+		opacity: 1;
+
+		transform: scale(1);
+	}
+
+	.buttons {
+		background:
+			linear-gradient(
+				#121212,
+				#121212
+			) padding-box,
+			linear-gradient(
+				#454545,
+				#aaa,
+				#454545
+			) border-box;
+
+		border-radius: 3rem;
+
+		border: 1px solid transparent;
+
+		box-shadow:
+			0 0 7px
+				rgba(255, 255, 255, 0.1),
+			inset 0 0 7px
+				rgba(255, 255, 255, 0.1),
+			0 0 10px 10px
+				rgba(255, 255, 255, 0.02);
+
+		padding: 1.5rem;
+
+		width: 60%;
+
+		transition: 0.5s ease;
+
+		display: flex;
+
+		justify-content: center;
+		align-items: center;
+
+		position: relative;
+
+		overflow: hidden;
+
+		color:
+			rgba(255, 255, 255, 0.8);
+
+		font-family:
+			'Climate Crisis',
+			sans-serif;
+
+		font-variation-settings:
+			'YEAR' 1990;
+
+		font-weight: 500;
+
+		font-size: 120%;
+
+		cursor: none;
+
+		-webkit-user-drag: none;
+
+		user-select: none;
+		-webkit-user-select: none;
+
+		line-height: 1.5rem;
+
+		box-sizing: border-box;
+	}
+
+	.buttons:hover {
+		background:
+			linear-gradient(
+				#121212,
+				#121212
+			) padding-box,
+			linear-gradient(
+				45deg,
+				rgb(71, 71, 71),
+				rgb(255, 255, 255),
+				rgb(71, 71, 71)
+			) border-box;
+
+		border: 1px solid transparent;
+
+		box-shadow:
+			0 0 12px
+				rgba(255, 255, 255, 0.35),
+			inset 0 0 10px
+				rgba(255, 255, 255, 0.35),
+			0 0 12px 12px
+				rgba(255, 255, 255, 0.05);
+	}
+
+	.buttons.active {
+		background: linear-gradient(#121212, #121212) padding-box,
+              linear-gradient(30deg, #793bff, #a981ff, #793bff) border-box;
+  	box-shadow: 0 0 7px rgba(50, 0, 149, 0.3), inset 0 0 7px rgba(50, 0, 149, 0.3), 0 0 10px 10px rgba(50, 0, 149, 0.3);
+	}
+
+  .buttons.active:hover{
+    background: linear-gradient(#121212, #121212) padding-box,
+              linear-gradient(45deg, #844bff, #c6abff, #844bff) border-box;
+        border: 1px solid transparent;
+        box-shadow: 0 0 12px rgba(111, 53, 228, 0.3), inset 0 0 10px rgba(111, 53, 228, 0.3), 0 0 12px 12px rgba(111, 53, 228, 0.3);
   }
 
-   h1 {
-        font-family: "Climate Crisis", sans-serif;
-        font-size: 500%;
-        font-weight: 1000;
-        text-shadow: 
-        -2px -2px 0 var(--purple),  
-        2px -2px 0 var(--purple),
-        -2px 2px 0 var(--purple),
-        2px 2px 0 var(--purple);
+	.open-button {
+		position: absolute;
+
+		top: 5rem;
+		right: 1rem;
+
+		width: 64px;
+		height: 64px;
+
+		display: flex;
+
+		align-items: center;
+		justify-content: center;
+
+		padding: 0;
+
+		border: 1px solid
+			rgba(255, 255, 255, 0.3);
+
+		border-radius: 50%;
+
+		background:
+			rgba(0, 0, 0, 0.45);
+
+		color: var(--purple);
+
+		font-size: 2rem;
+		font-weight: 600;
+
+		cursor: none;
+
+		backdrop-filter: blur(12px);
+
+		z-index: 200;
+
+		pointer-events: auto;
+
+		transition:
+			background 0.2s ease,
+			transform 0.2s ease;
+	}
+
+	.open-button:hover {
+		background:
+			rgba(255, 255, 255, 0.1);
+
+		transform: scale(1.05);
+	}
+
+	.open-button:active {
+		transform: scale(0.95);
+	}
+
+	.open-button:focus-visible {
+		outline: 2px solid white;
+		outline-offset: 4px;
+	}
+
+	@media (max-width: 700px) {
+		section {
+			padding: 1rem;
+		}
+
+		h1 {
+			font-size: clamp(2.5rem, 15vw, 4rem);
+			padding: 0.5rem 0;
+		}
+
+		.art {
+			flex-direction: column;
+		}
+
+		.showcase {
+			width: 100%;
+			height: 75%;
+		}
+
+		.art-showcase {
+			width: 100%;
+			height: 25%;
+
+			flex-direction: row;
+
+			gap: 1rem;
+		}
+
+		.buttons {
+			width: 45%;
+			padding: 1rem;
+
+			font-size: 90%;
+		}
+
+		.open-button {
+			width: 42px;
+			height: 42px;
+		}
+	}
+
+	.bg1 {
         width: 100%;
-        text-align: center;
-        color: white;
-        position: relative;
-        padding: 2rem 0;
-        text-decoration: underline;
-        text-underline-offset: 12px;
+        height: 100%;
+        position: absolute;
+        background-image: url('$lib/assets/bg1.svg');
+        background-repeat: no-repeat;
+        background-size: contain;
+        bottom: -40%;
+        right: -50%;
+        animation: bg1 6s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 1;
+        will-change: transform, opacity;
     }
 
-  .showcase {
-    width: 70%;
-    height: 70%;
-
-    position: relative;
-
-    border-radius: 2rem;
-
-    touch-action: none;
-  }
-
-  .container {
-    position: relative;
-
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    height: 100%;
-
-    transition: 1s ease;
-    scale: 0;
-
-    perspective: 2500px;
-
-    pointer-events: none;
-  }
-
-  .container-visible {
-    scale: 1;
-  }
-
-  .ring {
-    width: 500px;
-    height: 707px;
-
-    transform-style: preserve-3d;
-
-    background: none;
-
-    border: none;
-    outline: none;
-    box-shadow: none;
-
-    pointer-events: none;
-  }
-
-  .img {
-    position: absolute;
-
-    width: 500px;
-    height: 707px;
-
-    left: 0;
-    top: 0;
-
-    transform-style: preserve-3d;
-
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
-
-    backface-visibility: hidden;
-
-    border: none;
-    outline: none;
-
-    border-radius: 1rem;
-
-    box-shadow:
-      10px 15px 35px
-      rgb(0, 0, 0);
-
-    pointer-events: none;
-  }
-
-  .img::after {
-    content: '';
-
-    position: absolute;
-
-    inset: 0;
-
-    border-radius: 1rem;
-
-    pointer-events: none;
-
-    background:
-      linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.12),
-        transparent 35%,
-        transparent 70%,
-        rgba(255, 255, 255, 0.05)
-      );
-
-    mix-blend-mode: screen;
-  }
-
-  .open-button {
-    position: absolute;
-
-    top: 0;
-    right: 0;
-
-    width: 64px;
-    height: 64px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0;
-
-    border: 1px solid
-      rgba(255, 255, 255, 0.3);
-
-    border-radius: 50%;
-
-    background:
-      rgba(0, 0, 0, 0.45);
-
-    color: var(--purple);
-
-    font-size: 2rem;
-    font-weight: 600;
-    cursor: none;
-
-    backdrop-filter: blur(12px);
-
-    z-index: 100;
-
-    pointer-events: auto;
-
-    transition:
-      background 0.2s ease,
-      transform 0.2s ease;
-  }
-
-
-  .open-button:hover {
-    background:
-      rgba(255, 255, 255, 0.1);
-
-    transform: scale(1.05);
-  }
-
-
-  .open-button:active {
-    transform: scale(0.95);
-  }
-
-
-  .open-button:focus-visible {
-    outline: 2px solid white;
-    outline-offset: 4px;
-  }
-
-  @media (max-width: 700px) {
-
-    .showcase {
-      width: 90%;
-      height: 80%;
-    }
-
-    .container {
-      width: 280px;
-      height: 396px;
-    }
-
-    .ring {
-      width: 280px;
-      height: 396px;
-    }
-
-    .img {
-      width: 280px;
-      height: 396px;
-    }
-
-    .open-button {
-      top: 1rem;
-      right: 1rem;
-
-      width: 42px;
-      height: 42px;
-    }
-  }
+	    @keyframes bg1 {
+    0% { opacity: 0.1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 0.1; }
+}
 </style>

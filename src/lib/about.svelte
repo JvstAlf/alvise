@@ -194,9 +194,9 @@
 }
 
     .user-card img {
-        border-radius: 3rem;
+        border-radius: 100%;
         width: 50%;
-        aspect-ratio: 1/1.1;
+        aspect-ratio: 1/1;
         object-fit: cover;
     }
 

@@ -4,7 +4,9 @@ import { cursor } from './state.svelte'
 import { onMount } from 'svelte'
     let iframe = $state('')
     let el: HTMLDivElement;
-    let wrapper: HTMLDivElement
+    let wrapper: HTMLDivElement;
+
+    let activeProject = $state<number | null>(null);
 
     let progress = $state(0);
 
@@ -65,10 +67,93 @@ onMount(() => {
 
   <div class="wrapper" bind:this={wrapper}>
     <div class="websites" class:websites-visible={visible}>
-    <button class="buttons" onclick={() => iframe = 'https://alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Old Portfolio<img src={share} alt="share"></button>
-    <button class="buttons" onclick={() => iframe = 'https://old.alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Really old Portfolio<img src={share} alt="share"></button>
-    <button class="buttons" onclick={() => iframe = 'https://off-white.alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Off-White Project<img src={share} alt="share"></button>
-    <button class="buttons" onclick={() => iframe = 'https://demonlist.alvise.me'} onmouseenter={() => {cursor.size = 20, cursor.color = 'rgba(115, 88, 252, 0.8)'}} onmouseleave={() => {cursor.size = 8, cursor.color = 'rgba(255, 255, 255, 0.7)'}}>Svelte Project<img src={share} alt="share"></button>
+    <button
+    class="buttons"
+    class:active={activeProject === 0}
+    onclick={() => {
+        iframe = 'https://alvise.me';
+        activeProject = 0;
+    }}
+    onmouseenter={() => {
+						cursor.size = 20;
+						cursor.color =
+							'rgba(115, 88, 252, 0.8)';
+					}}
+					onmouseleave={() => {
+						cursor.size = 8;
+						cursor.color =
+							'rgba(255, 255, 255, 0.7)';
+					}}
+>
+    Old Portfolio
+    <img src={share} alt="share">
+</button>
+
+<button
+    class="buttons"
+    class:active={activeProject === 1}
+    onclick={() => {
+        iframe = 'https://old.alvise.me';
+        activeProject = 1;
+    }}
+    onmouseenter={() => {
+						cursor.size = 20;
+						cursor.color =
+							'rgba(115, 88, 252, 0.8)';
+					}}
+					onmouseleave={() => {
+						cursor.size = 8;
+						cursor.color =
+							'rgba(255, 255, 255, 0.7)';
+					}}
+>
+    Really old Portfolio
+    <img src={share} alt="share">
+</button>
+
+<button
+    class="buttons"
+    class:active={activeProject === 2}
+    onclick={() => {
+        iframe = 'https://off-white.alvise.me';
+        activeProject = 2;
+    }}
+    onmouseenter={() => {
+						cursor.size = 20;
+						cursor.color =
+							'rgba(115, 88, 252, 0.8)';
+					}}
+					onmouseleave={() => {
+						cursor.size = 8;
+						cursor.color =
+							'rgba(255, 255, 255, 0.7)';
+					}}
+>
+    Off-White Project
+    <img src={share} alt="share">
+</button>
+
+<button
+    class="buttons"
+    class:active={activeProject === 3}
+    onclick={() => {
+        iframe = 'https://demonlist.alvise.me';
+        activeProject = 3;
+    }}
+    onmouseenter={() => {
+						cursor.size = 20;
+						cursor.color =
+							'rgba(115, 88, 252, 0.8)';
+					}}
+					onmouseleave={() => {
+						cursor.size = 8;
+						cursor.color =
+							'rgba(255, 255, 255, 0.7)';
+					}}
+>
+    Svelte Project
+    <img src={share} alt="share">
+</button>
     </div>
   </div>
 
@@ -233,7 +318,7 @@ onMount(() => {
 
     .buttons {
         background: linear-gradient(#121212, #121212) padding-box,
-              linear-gradient(#454545, #aaa, #454545) border-box;
+              linear-gradient(30deg, #454545, #aaa, #454545) border-box;
         border-radius: 3rem;
         border: 1px solid transparent;
         box-shadow: 0 0 7px rgba(255, 255, 255, 0.1), inset 0 0 7px rgba(255, 255, 255, 0.1), 0 0 10px 10px rgba(255, 255, 255, 0.02);
@@ -264,10 +349,23 @@ onMount(() => {
     .buttons:hover {
         background: linear-gradient(#121212, #121212) padding-box,
               linear-gradient(45deg, rgb(71, 71, 71), rgb(255, 255, 255), rgb(71, 71, 71)) border-box;
-        border-radius: 2rem;
         border: 1px solid transparent;
         box-shadow: 0 0 12px rgba(255, 255, 255, 0.35), inset 0 0 10px rgba(255, 255, 255, 0.35), 0 0 12px 12px rgba(255, 255, 255, 0.05);
     }
+
+    	.buttons.active {
+		background: linear-gradient(#121212, #121212) padding-box,
+              linear-gradient(30deg, #793bff, #a981ff, #793bff) border-box;
+  	box-shadow: 0 0 7px rgba(50, 0, 149, 0.3), inset 0 0 7px rgba(50, 0, 149, 0.3), 0 0 10px 10px rgba(50, 0, 149, 0.3);
+	}
+
+  .buttons.active:hover{
+    background: linear-gradient(#121212, #121212) padding-box,
+              linear-gradient(45deg, #844bff, #c6abff, #844bff) border-box;
+        border: 1px solid transparent;
+        box-shadow: 0 0 12px rgba(111, 53, 228, 0.3), inset 0 0 10px rgba(111, 53, 228, 0.3), 0 0 12px 12px rgba(111, 53, 228, 0.3);
+  }
+
 
     .buttons img {
       position: absolute;
