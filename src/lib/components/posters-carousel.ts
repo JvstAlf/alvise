@@ -1,13 +1,13 @@
 import { gsap } from 'gsap';
 
 export const imageUrls = [
-	'https://old.alvise.me/images/shootingforthestars.webp',
-	'https://old.alvise.me/images/eyesnsmile.webp',
-	'https://old.alvise.me/images/eyesneverlies.webp',
-	'https://old.alvise.me/images/sicfnmt.webp',
-	'https://old.alvise.me/images/norainnoflowers.webp',
-	'https://old.alvise.me/images/nomorecho1.webp',
-	'https://old.alvise.me/images/nomorecho2.webp'
+	'https://veryold.alvise.me/images/shootingforthestars.webp',
+	'https://veryold.alvise.me/images/eyesnsmile.webp',
+	'https://veryold.alvise.me/images/eyesneverlies.webp',
+	'https://veryold.alvise.me/images/sicfnmt.webp',
+	'https://veryold.alvise.me/images/norainnoflowers.webp',
+	'https://veryold.alvise.me/images/nomorecho1.webp',
+	'https://veryold.alvise.me/images/nomorecho2.webp'
 ];
 
 const imageCount = imageUrls.length;

@@ -1,12 +1,12 @@
 import { gsap } from 'gsap';
 
 export const imageUrls = [
-	'https://old.alvise.me/images/1000.webp',
-	'https://old.alvise.me/images/5000.webp',
-	'https://old.alvise.me/images/cytokinesis.webp',
-	'https://old.alvise.me/images/euouae.webp',
-	'https://old.alvise.me/images/napalm.webp',
-	'https://old.alvise.me/images/subsonic.webp'
+	'https://veryold.alvise.me/images/1000.webp',
+	'https://veryold.alvise.me/images/5000.webp',
+	'https://veryold.alvise.me/images/cytokinesis.webp',
+	'https://veryold.alvise.me/images/euouae.webp',
+	'https://veryold.alvise.me/images/napalm.webp',
+	'https://veryold.alvise.me/images/subsonic.webp'
 ];
 
 const imageCount = imageUrls.length;
