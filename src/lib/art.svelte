@@ -96,11 +96,6 @@
 			return;
 		}
 
-		/*
-		 * Hide the current carousel while replacing it.
-		 */
-		visible = false;
-
 		carousel = name;
 
 		/*
@@ -124,7 +119,7 @@
 		 */
 		loadCarousel('posters-carousel.ts').then(() => {
 			requestAnimationFrame(() => {
-				visible = true;
+				visible = false;
 			});
 		});
 
