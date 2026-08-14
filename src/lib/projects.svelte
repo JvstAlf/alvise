@@ -6,11 +6,11 @@
     const projects = [
         {
             name: 'Old Portfolio',
-            url: 'https://alvise.me'
+            url: 'https://old.alvise.me'
         },
         {
             name: 'Really old Portfolio',
-            url: 'https://old.alvise.me'
+            url: 'https://veryold.alvise.me'
         },
         {
             name: 'Off-White Project',
