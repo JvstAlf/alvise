@@ -24,11 +24,14 @@ html {
     cursor: none !important;
     scroll-behavior: smooth;
     overflow-x: hidden;
+    max-width: 100%;
 }
 
 @media screen and (max-width: 700px) {
     html {
-        overflow: hidden;
         cursor: default;
+    }
+    body {
+        overflow-x: hidden;
     }
 }
