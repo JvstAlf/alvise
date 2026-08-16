@@ -396,6 +396,10 @@ let card: TiltElement;
 
         transition: 0.3s ease;
 
+        font-size: auto;
+
+        width: 100%;
+
         text-underline-position: 3px;
         text-underline-offset: 3px;
     }
@@ -407,7 +411,7 @@ let card: TiltElement;
     .user-card > div {
         width: 100%;
 
-        padding: 2rem;
+        padding: 2rem 0;
 
         display: flex;
 
@@ -419,31 +423,24 @@ let card: TiltElement;
     }
 
     .button {
-        width: 100%;
+        flex: 1;
+    min-width: 0;
+    box-sizing: border-box;
 
-        background-color: #ddd;
+    background-color: #ddd;
+    border-radius: 5rem;
+    padding: 1rem;
 
-        border-radius: 5rem;
+    font-family: "Climate Crisis", sans-serif;
+    cursor: none;
+    transition: 0.3s ease;
+    font-weight: 200;
+    font-variation-settings: "YEAR" 1990;
 
-        padding: 1rem;
+    box-shadow: 5px 5px 10px 5px rgba(0, 0, 0, 0.75);
 
-        color: black;
-
-        font-family: "Climate Crisis", sans-serif;
-
-        cursor: none;
-
-        transition: 0.3s ease;
-
-        font-weight: 200;
-
-        font-variation-settings: "YEAR" 1990;
-
-        box-shadow:
-            5px 5px 10px 5px rgba(0, 0, 0, 0.75);
-
-        text-align: center;
-        text-decoration: none;
+    text-align: center;
+    text-decoration: none;
     }
 
     .button:hover {
@@ -464,6 +461,12 @@ let card: TiltElement;
         100% {
             left: calc(100% + 20px);
         }
+    }
+
+    @media (max-width: 1550px) {
+        .user-card > div {
+        flex-direction: column;
+    }
     }
 
     /* TABLET */
@@ -588,12 +591,13 @@ let card: TiltElement;
         }
 
         .user-card > div {
-            flex-direction: column;
-        }
+        flex-direction: column;
+    }
 
-        .button {
-            width: 100%;
-        }
+    .button {
+        flex: none;
+        width: 100%;
+    }
     }
 
     /* ACCESSIBILITY */
