@@ -5,13 +5,13 @@
     import Nome from '$lib/assets/alvisezurlandi.png'
     import nextBtn from '$lib/assets/next.svg'
 
-    import canyoufeelitCover from '$lib/assets/songs/canyoufeelit.svg?raw'
+    import canyoufeelitCover from '$lib/assets/songs/canyoufeelit.svg'
     import canyoufeelit from '$lib/assets/songs/canyoufeelit.mp3'
-    import yu8meCover from '$lib/assets/songs/yu8me.svg?raw'
+    import yu8meCover from '$lib/assets/songs/yu8me.svg'
     import yu8me from '$lib/assets/songs/yu8me.mp3'
-    import imbrokencover from '$lib/assets/songs/imbroken.svg?raw'
+    import imbrokencover from '$lib/assets/songs/imbroken.svg'
     import imbroken from '$lib/assets/songs/imbroken.mp3'
-    import repulsivecover from '$lib/assets/songs/repulsive.svg?raw'
+    import repulsivecover from '$lib/assets/songs/repulsive.svg'
     import repulsive from '$lib/assets/songs/repulsive.mp3'
 
     import { cursor } from './state.svelte'
@@ -342,7 +342,7 @@ VanillaTilt.init(io);
                             role="presentation"
                             draggable="false"
                         >
-                            {@html vinylCover}
+                            <img src={vinylCover} alt="" draggable="false" />
                         </div>
 
                     </div>
@@ -526,17 +526,17 @@ VanillaTilt.init(io);
     }
 
     .vinyl {
-        width: 100%;
-        height: 100%;
+    width: 100%;
+    height: 100%;
 
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    will-change: transform;
+}
 
-        cursor: none;
-
-        will-change: transform;
-    }
+.vinyl img {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
 
     .vinyl :global(svg) {
         width: 100%;
@@ -560,14 +560,6 @@ VanillaTilt.init(io);
         );
 
         transition: filter 0.3s ease;
-
-        will-change: filter;
-    }
-
-    .vinyl-shadow:hover {
-        filter: drop-shadow(
-            0px 0px 15px rgba(255, 255, 255, 0.1)
-        );
     }
 
     .next {
