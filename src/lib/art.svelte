@@ -148,7 +148,7 @@
 	});
 </script>
 
-<section>
+<section id="art">
 <div class="title">
 	<h1>ART</h1>
 </div>
