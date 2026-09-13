@@ -1,6 +1,6 @@
 <script lang="ts">
     import Job from './components/job.svelte';
-    import Io from './assets/io.jpg';
+    import Io from './assets/io.webp';
     import { cursor } from '$lib/state.svelte';
     import { onMount } from 'svelte';
 
@@ -369,6 +369,7 @@ let card: TiltElement;
         aspect-ratio: 1 / 1;
 
         object-fit: cover;
+        image-rendering: optimizeSpeed;
     }
 
     .user-card p {
@@ -441,6 +442,7 @@ let card: TiltElement;
 
     text-align: center;
     text-decoration: none;
+    font-size: 90%;
     }
 
     .button:hover {

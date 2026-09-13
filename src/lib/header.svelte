@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import VanillaTilt from 'vanilla-tilt';
 
-    import Nome from '$lib/assets/alvisezurlandi.png'
+    import Nome from '$lib/assets/alvisezurlandi.webp'
     import nextBtn from '$lib/assets/next.svg'
 
     import canyoufeelitCover from '$lib/assets/songs/canyoufeelit.svg'
@@ -17,7 +17,7 @@
     import { cursor } from './state.svelte'
 
     let navbarPosition = $state(-50);
-    let nameScale = $state(60)
+    let nameScale = $state(10)
     let nameBlur = $state(100)
     let nameOpacity = $state(0)
 
@@ -175,7 +175,11 @@
         songName = songs[currentSongIndex].name;
         songLink = songs[currentSongIndex].link;
 
-        vinyl.style.transform = 'rotateX(-90deg)';
+        vinyl.style.opacity = '100'
+
+        setTimeout(() => {
+            vinyl.style.transform = 'rotateX(-90deg)';
+        }, 200);
 
         audio = new Audio(songs[currentSongIndex].url);
         audio.preload = 'auto';
@@ -329,6 +333,7 @@ VanillaTilt.init(io);
 
                         <div
                             class="vinyl"
+                            style="opacity: 0;"
                             bind:this={vinyl}
                             onclick={toggleRotate}
                             onmouseenter={() => {
@@ -609,20 +614,6 @@ VanillaTilt.init(io);
         height: auto;
 
         object-fit: contain;
-
-        animation: alvise 3s infinite alternate ease-in-out;
-    }
-
-    @keyframes alvise {
-        0% {
-            scale: 1;
-            translate: 20px -10px;
-        }
-
-        100% {
-            scale: 1.05;
-            translate: 0 0;
-        }
     }
 
     @media (max-width: 700px) {

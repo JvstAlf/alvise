@@ -218,7 +218,7 @@
 							'rgba(255, 255, 255, 0.7)';
 					}}
 				>
-					↗
+					&#8599;
 				</button>
 			</div>
 		</div>
@@ -656,6 +656,8 @@
 		transition:
 			background 0.2s ease,
 			transform 0.2s ease;
+		user-select: none;
+		-moz-user-select: none;
 	}
 
 	.open-button:hover {
