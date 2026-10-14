@@ -25,9 +25,6 @@
 	async function loadCarousel(name: CarouselName) {
 		loading = true;
 
-		/*
-		 * Completely destroy the previous carousel.
-		 */
 		if (cleanupCarousel) {
 			cleanupCarousel();
 			cleanupCarousel = undefined;
@@ -35,10 +32,6 @@
 
 		posters = null;
 
-		/*
-		 * Reset the ring before installing the
-		 * new carousel.
-		 */
 		if (ring) {
 			ring.removeAttribute('style');
 
@@ -50,42 +43,22 @@
 			});
 		}
 
-		/*
-		 * Load the requested carousel.
-		 */
 		const module =
 			name === 'posters-carousel.ts'
 				? await import('$lib/components/posters-carousel')
 				: await import('$lib/components/thumbnails-carousel');
 
-		/*
-		 * Replace the images.
-		 */
 		imageUrls = [...module.imageUrls];
 
-		/*
-		 * Wait until Svelte has created the
-		 * new .img elements.
-		 */
 		await tick();
 
-		/*
-		 * Make absolutely sure the ring contains
-		 * the correct number of images.
-		 */
 		if (!ring) {
 			loading = false;
 			return;
 		}
 
-		/*
-		 * Initialize the carousel.
-		 */
 		cleanupCarousel = module.initPosters(ring);
 
-		/*
-		 * Create a new controller.
-		 */
 		posters = module.createPosterController(ring);
 
 		loading = false;
@@ -98,34 +71,23 @@
 
 		carousel = name;
 
-		/*
-		 * Wait for the transition to start.
-		 */
 		await tick();
 
 		await loadCarousel(name);
 
-		/*
-		 * Show the new carousel.
-		 */
 		requestAnimationFrame(() => {
 			visible = true;
 		});
 	}
 
 	onMount(() => {
-		/*
-		 * Initial carousel.
-		 */
+
 		loadCarousel('posters-carousel.ts').then(() => {
 			requestAnimationFrame(() => {
 				visible = false;
 			});
 		});
 
-		/*
-		 * Intersection observer.
-		 */
 		const observer = new IntersectionObserver(
 			([entry]) => {
 				visible = entry.isIntersecting;
