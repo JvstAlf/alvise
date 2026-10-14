@@ -1,7 +1,7 @@
 import { gsap } from 'gsap';
 
 export const imageUrls = [
-	'https://veryold.alvise.me/images/1000.webp',
+	'https://veryold.alvise.me/images/leyak.webp',
 	'https://veryold.alvise.me/images/5000.webp',
 	'https://veryold.alvise.me/images/cytokinesis.webp',
 	'https://veryold.alvise.me/images/euouae.webp',
